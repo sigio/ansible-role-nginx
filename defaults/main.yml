@@ -1,0 +1,25 @@
+---
+
+nginx_dhparams_file:    "/etc/ssl/certs/dhparam.pem"
+nginx_dhparams_size:    "2048"
+nginx_tls_version:      "TLSv1.2"   # Too many systems with older nginx's
+#nginx_tls_cipherlist:  "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
+#nginx_tls_cipherlist:   "EECDH+AESGCM:EDH+AESGCM"
+nginx_tls_cipherlist:   "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-CHACHA20-POLY1305"
+nginx_tls_curve:        "secp384r1"
+nginx_tls_cache_size:   "10m"
+nginx_tls_session_timeout: "1h"
+nginx_http2:            false
+nginx_http_extra: []
+nginx_global_extra: []
+
+# CentOS/RedHat defaults to 'nginx', debian/ubuntu to 'www-data'
+nginx_user:             "www-data"
+# CentOS/Redhat uses /usr/share/nginx/modules, debian uses /etc/nginx/modules-enabled
+nginx_modules_dir:      "/etc/nginx/modules-enabled"
+
+# Path where you store your default ssl key and certificate (for example a wildcard?)
+nginx_default_key:      "/etc/pki/tls/private/postfix.key"
+nginx_default_chain:    "/etc/pki/tls/certs/postfix.pem"
+# Location for the /.well-known/acme-challenge directory on disk
+nginx_wk_acme:          "/var/lib/dehydrated/acme-challenges"

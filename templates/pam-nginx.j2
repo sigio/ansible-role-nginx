@@ -1,0 +1,8 @@
+# {{ansible_managed}}
+
+# NGINX Pam configuration for auth-pam module (version without userlist)
+# Example with a userlist
+# auth    required     pam_listfile.so onerr=fail item=user sense=allow file=/etc/nginx/restricted_users
+auth    required     pam_ldap.so
+account required     pam_ldap.so
+

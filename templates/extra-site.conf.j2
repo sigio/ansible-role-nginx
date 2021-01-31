@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+
+server {
+{% if site.nossl|default(false) %}
+    listen {{site.port|default('80')}};
+{% else %}
+    listen {{site.port|default('443')}} ssl{% if nginx_http2|bool %} http2{%endif%};
+
+    include /etc/nginx/tls_params;
+    ssl_certificate     {{site.sslchain|default(nginx_default_chain)}};
+    ssl_certificate_key {{site.sslkey|default(nginx_default_key)}};
+{% endif %}
+
+    server_name {{site.hostname|default(inventory_hostname)}};
+
+{% if site.accesslog is defined %}
+    access_log  {{site.accesslog}};
+{% else %}
+    access_log  /var/log/nginx/{{site.name}}.access.log;
+{% endif %}
+{% if site.errorlog is defined %}
+    error_log  {{site.errorlog}};
+{% else %}
+    error_log   /var/log/nginx/{{site.name}}.error.log;
+{% endif %}
+
+    # Per site configuration
+{% for line in site.config %}
+    {{line}}
+{% endfor %}
+}

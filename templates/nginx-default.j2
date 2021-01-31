@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server ipv6only=on;
+	server_name {{inventory_hostname}};
+
+    # Accept ACME-Challenges over http
+	location ^~ /.well-known/acme-challenge {
+		alias {{nginx_wk_acme}};
+	}
+
+    # Redirect everything to https by default
+	location / {
+		return 301 https://$host$request_uri;
+	}
+}
+
+{% for line in nginx_global_extra %}
+{{line}}
+{% endfor %}
+
