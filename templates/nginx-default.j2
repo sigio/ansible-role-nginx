@@ -1,14 +1,19 @@
 # {{ ansible_managed }}
 
 server {
-	listen 80 default_server;
-	listen [::]:80 default_server ipv6only=on;
+	listen {{nginx_v4_default_bind|default('')}}:{{nginx_v4_default_port|default('80')}} default_server;
+	listen {{nginx_v6_default_bind|default('[::]')}}:{{nginx_v6_default_port|default('80')}} default_server ipv6only=on;
 	server_name {{inventory_hostname}};
 
     # Accept ACME-Challenges over http
 	location ^~ /.well-known/acme-challenge {
 		alias {{nginx_wk_acme}};
 	}
+
+    # Block .ht files
+    location ~ /\.ht {
+        deny all;
+    }
 
     # Redirect everything to https by default
 	location / {

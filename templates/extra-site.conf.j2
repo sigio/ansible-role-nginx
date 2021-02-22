@@ -2,9 +2,9 @@
 
 server {
 {% if site.nossl|default(false) %}
-    listen {{site.port|default('80')}};
+    listen {{site.bind|default('')}}{{site.port|default('80')}};
 {% else %}
-    listen {{site.port|default('443')}} ssl{% if nginx_http2|bool %} http2{%endif%};
+    listen {{site.bind|default('')}}{{site.port|default('443')}} ssl{% if nginx_http2|bool %} http2{%endif%};
 
     include /etc/nginx/tls_params;
     ssl_certificate     {{site.sslchain|default(nginx_default_chain)}};
@@ -12,6 +12,10 @@ server {
 {% endif %}
 
     server_name {{site.hostname|default(inventory_hostname)}};
+
+    location ~ /\.ht {
+        deny all;
+    }
 
 {% if site.accesslog is defined %}
     access_log  {{site.accesslog}};

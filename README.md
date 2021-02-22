@@ -12,12 +12,20 @@ better).
 
 # Usage
 
-Make sure to define 'manage_nginx: true' and configure your websites with 'nginx_sites'.
+The entire role can always be included, as it won't do anything unless 'manage_nginx' is enabled (default false)
+
+A default 'dummy' configuration will be created, listening on port 80, which will basically only redirect everything to https, and have a configuration for /.well-known/acme-challenge, so we can do ACME validations.
+
+Besides this default 'dummy' configuration, actual useful websites should be configured in the 'nginx_sites' structure
+
 An example 'nginx_sites':
 
 nginx_sites:
   - name: "packages.example.com"
     hostname: "packages.example.com"
+    bind: "1.2.3.4"
+    port: "8000"
+    nossl: true
     config:
       - "# debpkgs"
       - "root /var/www/packages;"
@@ -42,4 +50,53 @@ nginx_sites:
       - "    fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/icinga$fastcgi_script_name;"
       - "    fastcgi_pass fcgiwrap;"
       - "}" 
+
+# Options
+
+## Base defaults
+
+nginx_v4_default_bind
+: Address to bind to using ipv4, default ''
+
+nginx_v6_default_bind
+: Address to bind to using ipv6, default '[::]'
+
+nginx_v4_default_port
+: Port-number to listen on for the default ipv4 site, defaults to '80'
+
+nginx_v6_default_port
+: Port-number to listen on for the default ipv6 site, defaults to '80'
+
+nginx_global_extra
+: Extra configuration to include into the default website configuration
+
+
+## Per-site settings
+nossl
+: The default is to use ssl, and bind on port 443, setting nossl to false will change this back to port 80 and no-ssl.
+
+port
+: Set the portnumber to listen on, default will be either 80 or 443, depending on the value of **nossl**
+
+bind
+: The IP to bind on, default is empty
+
+sslchain
+: The location of the certificate-chain to be used for TLS, will default to **nginx_default_chain** unless specified
+
+sslkey
+: The location of the key to be used for TLS, will default to **nginx_default_key** unless specified
+
+hostname (mandatory)
+: The site names to listen on, space separated
+
+accesslog
+: Where to store the request logs, default will be in /var/log/nginx/**sitename**.access.log
+
+errorlog
+: Where to store the error logs, default will be in /var/log/nginx/**sitename**.error.log
+
+config
+: Additional configuration for this website, will be copied verbatim into the resulting site-configuration. Should usually include things like 'root' and 'index' entries, or 'location' and 'proxy' statements.
+
 
