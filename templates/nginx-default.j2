@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 server {
-	listen {{nginx_v4_default_bind|default('')}}:{{nginx_v4_default_port|default('80')}} default_server;
+	listen {{nginx_v4_default_bind|default('0.0.0.0')}}:{{nginx_v4_default_port|default('80')}} default_server;
 	listen {{nginx_v6_default_bind|default('[::]')}}:{{nginx_v6_default_port|default('80')}} default_server ipv6only=on;
 	server_name {{inventory_hostname}};
 
