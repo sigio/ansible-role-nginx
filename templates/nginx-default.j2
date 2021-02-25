@@ -6,8 +6,8 @@ server {
 	server_name {{inventory_hostname}};
 
     # Accept ACME-Challenges over http
-	location ^~ /.well-known/acme-challenge {
-		alias {{nginx_wk_acme}};
+	location ^~ /.well-known/acme-challenge/ {
+		alias {{nginx_wk_acme}}/;
 	}
 
     # Block .ht files

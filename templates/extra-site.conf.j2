@@ -2,9 +2,20 @@
 
 server {
 {% if site.nossl|default(false) %}
-    listen {{site.bind|default('')}}{{site.port|default('80')}};
+{%   if site.bindproto|default('all') == "ipv4" or site.bindproto|default('all') == "all" %}
+    listen {{site.bind4|default('0.0.0.0')}}:{{site.port|default('80')}};
+{%   endif %}
+{%   if site.bindproto|default('all') == "ipv6" or site.bindproto|default('all') == "all" %}
+    listen {{site.bind6|default('[::]')}}:{{site.port|default('80')}};
+{%   endif %}
 {% else %}
-    listen {{site.bind|default('')}}{{site.port|default('443')}} ssl{% if nginx_http2|bool %} http2{%endif%};
+{%   if site.bindproto|default('all') == "ipv4" or site.bindproto|default('all') == "all" %}
+    listen {{site.bind4|default('0.0.0.0')}}:{{site.port|default('443')}} ssl{% if nginx_http2|bool %} http2{%endif%};
+{%   endif %}
+{%   if site.bindproto|default('all') == "ipv6" or site.bindproto|default('all') == "all" %}
+    listen {{site.bind6|default('[::]')}}:{{site.port|default('443')}} ssl{% if nginx_http2|bool %} http2{%endif%};
+{%   endif %}
+{% endif %}
 
     include /etc/nginx/tls_params;
     ssl_certificate     {{site.sslchain|default(nginx_default_chain)}};

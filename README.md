@@ -78,8 +78,14 @@ nossl
 port
 : Set the portnumber to listen on, default will be either 80 or 443, depending on the value of **nossl**
 
+bindproto
+: The protocols to bind on, either 'ipv4', 'ipv6' or 'all', which is the default
+
 bind
-: The IP to bind on, default is empty
+: The IPv4 to bind on, default is '0.0.0.0'
+
+bind6
+: The IPv6 to bind on, default is '[::]'
 
 sslchain
 : The location of the certificate-chain to be used for TLS, will default to **nginx_default_chain** unless specified
