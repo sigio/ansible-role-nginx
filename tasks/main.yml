@@ -67,6 +67,8 @@
     loop_var: site
   notify: reload nginx
   when: manage_nginx|bool
+  tags:
+    - nginxextra
 
 - name: Enable nginx default
   file:

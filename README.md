@@ -79,7 +79,7 @@ port
 : Set the portnumber to listen on, default will be either 80 or 443, depending on the value of **nossl**
 
 bindproto
-: The protocols to bind on, either 'ipv4', 'ipv6' or 'all', which is the default
+: The protocols to bind on, either 'ipv4', 'ipv6' or undefined, which means both.
 
 bind
 : The IPv4 to bind on, default is '0.0.0.0'
