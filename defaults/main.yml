@@ -1,5 +1,6 @@
 ---
 
+manage_nginx:           false
 nginx_dhparams_file:    "/etc/ssl/certs/dhparam.pem"
 nginx_dhparams_size:    "2048"
 nginx_tls_version:      "TLSv1.2"   # Too many systems with older nginx's
