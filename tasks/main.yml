@@ -17,19 +17,19 @@
     - ansible_os_family == 'RedHat'
 
 - name: Create dhparams file
-  command: openssl dhparam -out {{nginx_dhparams_file}} {{nginx_dhparams_size}}
+  command: openssl dhparam -out {{ nginx_dhparams_file }} {{nginx_dhparams_size}}
   args:
-    creates: "{{nginx_dhparams_file}}"
+    creates: "{{ nginx_dhparams_file }}"
   notify: reload nginx
   when: manage_nginx|bool
 
 - name: Create sites-available / sites-enabled directories
   file:
     state: directory
-    path: "{{item.path}}"
-    owner: "{{item.owner|default('root')}}"
-    group: "{{item.group|default('root')}}"
-    mode: "{{item.mode|default(0755)}}"
+    path: "{{ item.path}}"
+    owner: "{{ item.owner|default('root') }}"
+    group: "{{ item.group|default('root') }}"
+    mode: "{{ item.mode|default('0755') }}"
   with_items:
     - { path: "/etc/nginx/sites-available" }
     - { path: "/etc/nginx/sites-enabled" }
@@ -38,12 +38,12 @@
 
 - name: Template default nginx config files
   template:
-    src: "{{item.src}}"
-    dest: "{{item.dest}}"
-    owner: "{{item.owner|default('root')}}"
-    group: "{{item.group|default('root')}}"
-    mode: "{{item.mode|default('0644')}}"
-    force: "{{item.force|default('yes')}}"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner|default('root') }}"
+    group: "{{ item.group|default('root') }}"
+    mode: "{{ item.mode|default('0644') }}"
+    force: "{{ item.force|default('yes') }}"
     backup: true
   with_items:
     - { src: "pam-nginx.j2", dest: "/etc/pam.d/nginx-allusers" }
@@ -57,12 +57,12 @@
   template:
     src: "extra-site.conf.j2"
     dest: "/etc/nginx/sites-available/{{site.name}}.conf"
-    owner: "{{site.owner|default('root')}}"
-    group: "{{site.group|default('root')}}"
-    mode: "{{site.mode|default('0644')}}"
-    force: "{{site.force|default('yes')}}"
+    owner: "{{ site.owner|default('root') }}"
+    group: "{{ site.group|default('root') }}"
+    mode: "{{ site.mode|default('0644') }}"
+    force: "{{ site.force|default('yes') }}"
     backup: true
-  loop: "{{nginx_sites}}"
+  loop: "{{ nginx_sites }}"
   loop_control:
     loop_var: site
   notify: reload nginx
@@ -81,8 +81,8 @@
   file:
     src: "/etc/nginx/sites-available/{{site.name}}.conf"
     dest: "/etc/nginx/sites-enabled/{{site.name}}.conf"
-    state: "{% if site.disabled|default(false) %}absent{%else%}link{%endif%}"
-  loop: "{{nginx_sites}}"
+    state: "{% if site.disabled|default(false) %}absent{% else %}link{% endif %}"
+  loop: "{{ nginx_sites }}"
   loop_control:
     loop_var: site
   notify: reload nginx
