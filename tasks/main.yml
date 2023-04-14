@@ -1,30 +1,30 @@
 ---
 
 - name: Install nginx base package
-  apt:
-    pkg: nginx
+  ansible.builtin.apt:
+    package: nginx
     state: present
   when:
     - manage_nginx|bool
     - ansible_os_family == 'Debian'
 
 - name: Install nginx base package
-  yum:
-    pkg: nginx
+  ansible.builtin.yum:
+    name: nginx
     state: present
   when:
     - manage_nginx|bool
     - ansible_os_family == 'RedHat'
 
 - name: Create dhparams file
-  command: openssl dhparam -out {{ nginx_dhparams_file }} {{nginx_dhparams_size}}
+  ansible.builtin.command: openssl dhparam -out {{ nginx_dhparams_file }} {{nginx_dhparams_size}}
   args:
     creates: "{{ nginx_dhparams_file }}"
   notify: reload nginx
   when: manage_nginx|bool
 
 - name: Create sites-available / sites-enabled directories
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ item.path}}"
     owner: "{{ item.owner|default('root') }}"
@@ -37,13 +37,13 @@
   when: manage_nginx|bool
 
 - name: Template default nginx config files
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "{{ item.owner|default('root') }}"
     group: "{{ item.group|default('root') }}"
     mode: "{{ item.mode|default('0644') }}"
-    force: "{{ item.force|default('yes') }}"
+    force: "{{ item.force|default('true') }}"
     backup: true
   with_items:
     - { src: "pam-nginx.j2", dest: "/etc/pam.d/nginx-allusers" }
@@ -54,13 +54,13 @@
   when: manage_nginx|bool
 
 - name: Template site-specific configs
-  template:
+  ansible.builtin.template:
     src: "extra-site.conf.j2"
     dest: "/etc/nginx/sites-available/{{site.name}}.conf"
     owner: "{{ site.owner|default('root') }}"
     group: "{{ site.group|default('root') }}"
     mode: "{{ site.mode|default('0644') }}"
-    force: "{{ site.force|default('yes') }}"
+    force: "{{ site.force|default('true') }}"
     backup: true
   loop: "{{ nginx_sites }}"
   loop_control:
@@ -71,14 +71,14 @@
     - nginxextra
 
 - name: Enable nginx default
-  file:
+  ansible.builtin.file:
     src: "/etc/nginx/sites-available/default"
     dest: "/etc/nginx/sites-enabled/000default"
     state: "link"
   when: manage_nginx|bool
 
 - name: Enable nginx sites
-  file:
+  ansible.builtin.file:
     src: "/etc/nginx/sites-available/{{site.name}}.conf"
     dest: "/etc/nginx/sites-enabled/{{site.name}}.conf"
     state: "{% if site.disabled|default(false) %}absent{% else %}link{% endif %}"
