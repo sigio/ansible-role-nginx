@@ -4,8 +4,6 @@ manage_nginx:           false
 nginx_dhparams_file:    "/etc/ssl/certs/dhparam.pem"
 nginx_dhparams_size:    "2048"
 nginx_tls_version:      "TLSv1.2"   # Too many systems with older nginx's
-#nginx_tls_cipherlist:  "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
-#nginx_tls_cipherlist:   "EECDH+AESGCM:EDH+AESGCM"
 nginx_tls_cipherlist:   "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-CHACHA20-POLY1305"
 nginx_tls_curve:        "secp384r1"
 nginx_tls_cache_size:   "10m"

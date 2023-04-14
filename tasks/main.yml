@@ -17,33 +17,35 @@
     - ansible_os_family == 'RedHat'
 
 - name: Create dhparams file
-  ansible.builtin.command: openssl dhparam -out {{ nginx_dhparams_file }} {{nginx_dhparams_size}}
+  ansible.builtin.command: openssl dhparam -out {{ nginx_dhparams_file }} {{ nginx_dhparams_size }}
   args:
     creates: "{{ nginx_dhparams_file }}"
   notify: reload nginx
-  when: manage_nginx|bool
+  when:
+    - manage_nginx|bool
 
 - name: Create sites-available / sites-enabled directories
   ansible.builtin.file:
     state: directory
-    path: "{{ item.path}}"
-    owner: "{{ item.owner|default('root') }}"
-    group: "{{ item.group|default('root') }}"
-    mode: "{{ item.mode|default('0755') }}"
+    path: "{{ item.path }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0755') }}"
   with_items:
     - { path: "/etc/nginx/sites-available" }
     - { path: "/etc/nginx/sites-enabled" }
   notify: reload nginx
-  when: manage_nginx|bool
+  when:
+    - manage_nginx|bool
 
 - name: Template default nginx config files
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: "{{ item.owner|default('root') }}"
-    group: "{{ item.group|default('root') }}"
-    mode: "{{ item.mode|default('0644') }}"
-    force: "{{ item.force|default('true') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0644') }}"
+    force: "{{ item.force | default('true') }}"
     backup: true
   with_items:
     - { src: "pam-nginx.j2", dest: "/etc/pam.d/nginx-allusers" }
@@ -51,22 +53,24 @@
     - { src: "tls_params.j2", dest: "/etc/nginx/tls_params" }
     - { src: "nginx-default.j2", dest: "/etc/nginx/sites-available/default" }
   notify: reload nginx
-  when: manage_nginx|bool
+  when:
+    - manage_nginx|bool
 
 - name: Template site-specific configs
   ansible.builtin.template:
     src: "extra-site.conf.j2"
-    dest: "/etc/nginx/sites-available/{{site.name}}.conf"
-    owner: "{{ site.owner|default('root') }}"
-    group: "{{ site.group|default('root') }}"
-    mode: "{{ site.mode|default('0644') }}"
-    force: "{{ site.force|default('true') }}"
+    dest: "/etc/nginx/sites-available/{{ site.name }}.conf"
+    owner: "{{ site.owner | default('root') }}"
+    group: "{{ site.group | default('root') }}"
+    mode: "{{ site.mode | default('0644') }}"
+    force: "{{ site.force | default('true') }}"
     backup: true
   loop: "{{ nginx_sites }}"
   loop_control:
     loop_var: site
   notify: reload nginx
-  when: manage_nginx|bool
+  when:
+    - manage_nginx|bool
   tags:
     - nginxextra
 
@@ -75,15 +79,18 @@
     src: "/etc/nginx/sites-available/default"
     dest: "/etc/nginx/sites-enabled/000default"
     state: "link"
-  when: manage_nginx|bool
+  when:
+    - manage_nginx|bool
 
 - name: Enable nginx sites
   ansible.builtin.file:
-    src: "/etc/nginx/sites-available/{{site.name}}.conf"
-    dest: "/etc/nginx/sites-enabled/{{site.name}}.conf"
-    state: "{% if site.disabled|default(false) %}absent{% else %}link{% endif %}"
+    src: "/etc/nginx/sites-available/{{ site.name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ site.name }}.conf"
+    state: "{% if site.disabled | default(false) %}absent{% else %}link{% endif %}"
+    mode: "0644"
   loop: "{{ nginx_sites }}"
   loop_control:
     loop_var: site
   notify: reload nginx
-  when: manage_nginx|bool
+  when:
+    - manage_nginx | bool

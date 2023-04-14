@@ -5,4 +5,5 @@
     name: nginx
     state: reloaded
     enabled: true
-  when: manage_nginx|bool
+  when:
+    - manage_nginx | bool
